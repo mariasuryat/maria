@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Fuzzy untuk Menghitung Tingkat Stres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        label, input, button {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        canvas {
+            margin-top: 20px;
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Perhitungan Tingkat Stres Berdasarkan Jumlah Tugas, Lama Waktu Belajar, dan Lama Tidur</h1>
+        
+        <label for="jt">Jumlah Tugas (0-10): </label>
+        <input type="number" id="jt" min="0" max="10" step="1">
+        <br>
+        
+        <label for="lwb">Lama Waktu Belajar (0-50): </label>
+        <input type="number" id="lwb" min="0" max="50" step="1">
+        <br>
+        
+        <label for="lwt">Lama Waktu Tidur (0-12): </label>
+        <input type="number" id="lwt" min="0" max="12" step="1">
+        <br>
+        
+        <button onclick="calculateStress()">Hitung Tingkat Stres</button>
+
+        <div class="output" id="output"></div>
+        <canvas id="stressChart"></canvas>
+    </div>
+
+    <script>
+        // Fungsi untuk menghitung tingkat stres
+        function calculateStress() {
+            const jt = parseInt(document.getElementById("jt").value);
+            const lwb = parseInt(document.getElementById("lwb").value);
+            const lwt = parseInt(document.getElementById("lwt").value);
+
+            // Implementasi fuzzy inference
+            let stress = '';
+            let stressValue = 0;
+
+            // Fuzzy logic rules (dalam bentuk sederhana)
+            if (jt <= 3 && lwb <= 10 && lwt >= 8) {
+                stress = 'Rendah';
+                stressValue = 3;  // Skala 1-10, 3 untuk rendah
+            } else if (jt >= 7 && lwb >= 30 && lwt <= 6) {
+                stress = 'Tinggi';
+                stressValue = 9;  // Skala 1-10, 9 untuk tinggi
+            } else if (jt >= 5 && lwb >= 20 && lwt >= 6) {
+                stress = 'Sedang';
+                stressValue = 6;  // Skala 1-10, 6 untuk sedang
+            } else {
+                stress = 'Sedang';
+                stressValue = 6;  // Skala 1-10, 6 untuk sedang
+            }
+
+            // Menampilkan hasil
+            document.getElementById("output").innerHTML = 
+                `<p><strong>Jumlah Tugas:</strong> ${jt}</p>
+                 <p><strong>Lama Waktu Belajar:</strong> ${lwb}</p>
+                 <p><strong>Lama Waktu Tidur:</strong> ${lwt}</p>
+                 <p><strong>Tingkat Stres:</strong> ${stress}</p>`;
+            
+            // Membuat grafik
+            displayChart(stressValue);
+        }
+
+        // Fungsi untuk menampilkan grafik
+        function displayChart(stressValue) {
+            var ctx = document.getElementById('stressChart').getContext('2d');
+
+            // Data untuk grafik
+            var chartData = {
+                labels: ['Tingkat Stres'],
+                datasets: [{
+                    label: 'Tingkat Stres (1-10)',
+                    data: [stressValue],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            };
+
+            // Opsi untuk grafik
+            var chartOptions = {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            max: 10
+                        }
+                    }
+                }
+            };
+
+            // Membuat atau memperbarui grafik
+            if (window.bar != undefined) {
+                window.bar.destroy();
+            }
+            window.bar = new Chart(ctx, {
+                type: 'bar', // Jenis grafik (bar chart)
+                data: chartData,
+                options: chartOptions
+            });
+        }
+    </script>
+</body>
+</html>
